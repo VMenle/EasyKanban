@@ -374,7 +374,7 @@
     var d = new Date();
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'aufgaben_export_' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '.json';
+    a.download = 'easykanban_export_' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '.json';
     document.body.appendChild(a);
     a.click();
     a.remove();

@@ -1,7 +1,7 @@
 {
   "_stand": "03.10.2026",
-  "name": "Aufgaben",
-  "short_name": "Aufgaben",
+  "name": "EasyKanban",
+  "short_name": "EasyKanban",
   "description": "Einfaches Kanban: Sammelkorb, Next, i.A.",
   "lang": "de",
   "start_url": "./",
