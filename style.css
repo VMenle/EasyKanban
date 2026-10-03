@@ -1,0 +1,330 @@
+/* Stand: 03.10.2026 - Gestaltung Kanbantool (hell, Systemschrift, funktioniert offline) */
+:root {
+  --bg: #f4f5f8;
+  --panel: #eaedf3;
+  --card: #ffffff;
+  --text: #1b1f27;
+  --muted: #6b7280;
+  --line: #dfe3ea;
+  --accent: #4f46e5;
+  --accentSoft: #eceeff;
+  --warn: #9a5b00;
+  --warnBg: #fff4df;
+  --warnLine: #f2b04c;
+  --danger: #c0362c;
+  --radius: 14px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.4 var(--font);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Kopfzeile in den Farben des Logos */
+.topBar {
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+  color: #fff;
+  padding-top: env(safe-area-inset-top);
+  margin-bottom: 12px;
+}
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 14px 16px;
+}
+.top h1 { margin: 0; font-size: 22px; font-weight: 750; letter-spacing: -0.01em; }
+.topActions { display: flex; gap: 8px; }
+.topActions .btn {
+  min-height: 40px;
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.38);
+  color: #fff;
+}
+.topActions .btn:hover { background: rgba(255, 255, 255, 0.26); }
+
+/* Schaltflaechen */
+.btn {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-weight: 600;
+}
+.btn:hover { background: #f7f8fb; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { background: #4338ca; }
+.btn.danger { color: var(--danger); border-color: #f0c9c5; background: #fff; }
+
+.iconBtn {
+  min-width: 44px;
+  height: 44px;
+  padding: 0 10px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 16px;
+  font-weight: 600;
+}
+.iconBtn:hover { background: #f7f8fb; }
+.iconBtn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.iconBtn.mic.listening {
+  background: #fee2e2;
+  border-color: #f87171;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse { 50% { box-shadow: 0 0 0 6px rgba(248, 113, 113, 0.25); } }
+@media (prefers-reduced-motion: reduce) { .iconBtn.mic.listening { animation: none; } }
+
+/* Tabs (nur Handy) */
+.tabs { display: none; }
+
+/* Board */
+.board {
+  display: grid;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 8px 16px 40px;
+}
+.panel {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.panelHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.panelHead h2 { margin: 0; font-size: 17px; font-weight: 700; }
+.panelHead h2::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--area);
+}
+/* Bereichsfarben: Sammelkorb grau blau, Next Indigo, i.A. Gruen (wie im Logo) */
+.panel[data-area="sammel"], .list[data-area="sammel"] { --area: #94a3b8; }
+.panel[data-area="next"], .list[data-area="next"] { --area: #4f46e5; }
+.panel[data-area="ia"], .list[data-area="ia"] { --area: #10b981; }
+.count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  background: #fff;
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+.count.full { color: var(--warn); background: var(--warnBg); }
+
+.addForm {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.addForm input {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  min-width: 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.empty {
+  margin: 4px 2px 2px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.empty[hidden] { display: none; }
+
+/* Karten */
+.card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 4px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 4px 8px 4px 2px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+.card { border-left: 4px solid var(--area, var(--line)); }
+.card.waiting { background: var(--warnBg); border-color: var(--warnLine); border-left-color: var(--warnLine); }
+.handle {
+  width: 36px;
+  height: 48px;
+  border: 0;
+  background: none;
+  color: #9aa1ae;
+  cursor: grab;
+  touch-action: none;
+  font-size: 18px;
+  letter-spacing: -3px;
+}
+.handle:active { cursor: grabbing; }
+.body {
+  display: block;
+  min-width: 0;
+  padding: 8px 4px;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+.title { display: block; font-weight: 600; overflow-wrap: anywhere; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+.chip {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accentSoft);
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--warn);
+  background: #ffe8bd;
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+.badge[hidden] { display: none; }
+.actions { display: flex; gap: 6px; }
+.actions .iconBtn { height: 40px; min-width: 40px; }
+
+/* Ziehen */
+.card.dragging {
+  position: fixed;
+  z-index: 1000;
+  box-shadow: 0 14px 30px rgba(16, 24, 40, 0.25);
+  opacity: 0.97;
+}
+.placeholder {
+  list-style: none;
+  border: 2px dashed #c3c9d6;
+  border-radius: 12px;
+  background: transparent;
+}
+
+/* Popup */
+dialog {
+  border: 0;
+  border-radius: 18px;
+  padding: 0;
+  width: min(560px, calc(100vw - 24px));
+  color: var(--text);
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(16, 24, 40, 0.3);
+}
+dialog::backdrop { background: rgba(15, 18, 25, 0.45); }
+#dlgForm { padding: 18px; display: grid; gap: 14px; }
+.dlgHead { display: flex; gap: 8px; align-items: center; }
+#dlgForm label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+#dlgForm input, #dlgForm textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+  font-weight: 400;
+  font-size: 16px;
+}
+#dlgForm textarea { min-height: 150px; resize: vertical; }
+.moveRow { display: flex; flex-wrap: wrap; gap: 8px; }
+.moveRow .btn { flex: 1 1 auto; }
+.dlgFoot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.spacer { flex: 1; }
+
+/* Hinweis unten */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  max-width: min(520px, calc(100vw - 24px));
+  display: none;
+  align-items: center;
+  gap: 12px;
+  background: #1f2430;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(16, 24, 40, 0.3);
+  font-size: 14px;
+  z-index: 2000;
+}
+.toast.show { display: flex; }
+.toast button {
+  border: 0;
+  background: none;
+  color: #a5b4fc;
+  font-weight: 700;
+  padding: 6px 4px;
+}
+
+/* Handy: ein Bereich nach dem anderen ueber Tabs */
+@media (max-width: 899px) {
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 4px 16px 8px;
+  }
+  .tab {
+    min-height: 46px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    font-weight: 650;
+    font-size: 14px;
+  }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .tabCount { opacity: 0.75; font-weight: 600; margin-left: 2px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+}
+
+/* PC: drei Spalten */
+@media (min-width: 900px) {
+  .board { grid-template-columns: 1.3fr 1fr 1fr; align-items: start; }
+}
+
+/* sehr schmale Handys: Aktionen unter dem Titel */
+@media (max-width: 420px) {
+  .card { grid-template-columns: auto 1fr; }
+  .actions { grid-column: 2; padding: 0 0 6px 4px; }
+}

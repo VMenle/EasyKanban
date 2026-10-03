@@ -1,0 +1,104 @@
+<!doctype html>
+<!-- Stand: 03.10.2026 - Kanbantool Offline Version (Daten lokal im Browser) -->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+<title>Aufgaben</title>
+<meta name="theme-color" content="#4f46e5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Aufgaben">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon180.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topBar">
+  <div class="top">
+    <h1>Aufgaben</h1>
+    <div class="topActions">
+      <button id="exportBtn" class="btn" type="button">Export</button>
+      <button id="importBtn" class="btn" type="button">Import</button>
+      <input id="importFile" type="file" accept="application/json,.json" hidden>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs" aria-label="Bereiche">
+  <button type="button" class="tab" data-area="sammel">Sammelkorb <span class="tabCount" id="tabSammel"></span></button>
+  <button type="button" class="tab" data-area="next">Next <span class="tabCount" id="tabNext"></span></button>
+  <button type="button" class="tab" data-area="ia">i.A. <span class="tabCount" id="tabIa"></span></button>
+</nav>
+
+<main class="board" id="board">
+
+  <section class="panel" data-area="sammel" aria-labelledby="hSammel">
+    <div class="panelHead">
+      <h2 id="hSammel">Sammelkorb</h2>
+      <span class="count" id="countSammel"></span>
+    </div>
+    <form id="addForm" class="addForm" autocomplete="off">
+      <input id="addTitle" type="text" maxlength="200" placeholder="Neue Aufgabe oder Idee …" required aria-label="Aufgabe">
+      <button id="micBtn" class="iconBtn mic" type="button" aria-label="Diktieren" title="Diktieren">🎤</button>
+      <input id="addTag" type="text" maxlength="40" list="tagList" placeholder="Stichwort" aria-label="Stichwort">
+      <button class="btn primary" type="submit">Hinzufügen</button>
+    </form>
+    <ul class="list" data-area="sammel"></ul>
+    <p class="empty" data-empty="sammel">Noch nichts im Sammelkorb.</p>
+  </section>
+
+  <section class="panel" data-area="next" aria-labelledby="hNext">
+    <div class="panelHead">
+      <h2 id="hNext">Next</h2>
+      <span class="count" id="countNext"></span>
+    </div>
+    <ul class="list" data-area="next"></ul>
+    <p class="empty" data-empty="next">Hier stehen die nächsten Aufgaben (max. 5).</p>
+  </section>
+
+  <section class="panel" data-area="ia" aria-labelledby="hIa">
+    <div class="panelHead">
+      <h2 id="hIa">i.A.</h2>
+      <span class="count" id="countIa"></span>
+    </div>
+    <ul class="list" data-area="ia"></ul>
+    <p class="empty" data-empty="ia">Hier stehen die Aufgaben in Arbeit (max. 5).</p>
+  </section>
+
+</main>
+
+<dialog id="dlg" aria-label="Aufgabe bearbeiten">
+  <form id="dlgForm" autocomplete="off">
+    <div class="dlgHead">
+      <span id="dlgArea" class="chip"></span>
+      <span id="dlgWait" class="badge" hidden>Warten</span>
+    </div>
+    <label>Titel
+      <input id="dlgTitleInput" type="text" maxlength="200" required>
+    </label>
+    <label>Stichwort
+      <input id="dlgTag" type="text" maxlength="40" list="tagList">
+    </label>
+    <label>Notizen
+      <textarea id="dlgNotes" maxlength="5000" rows="7"></textarea>
+    </label>
+    <div class="moveRow" id="dlgMoves"></div>
+    <div class="dlgFoot">
+      <button type="button" id="dlgDelete" class="btn danger">Erledigt / Löschen</button>
+      <span class="spacer"></span>
+      <button type="button" id="dlgCancel" class="btn">Abbrechen</button>
+      <button type="submit" class="btn primary">Speichern</button>
+    </div>
+  </form>
+</dialog>
+
+<datalist id="tagList"></datalist>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
