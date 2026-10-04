@@ -1,4 +1,4 @@
-/* Stand: 03.10.2026 - Gestaltung Kanbantool (hell, Systemschrift, funktioniert offline) */
+/* Stand: 04.10.2026 - Gestaltung EasyKanban (hell, Systemschrift, funktioniert offline) */
 :root {
   --bg: #f4f5f8;
   --panel: #eaedf3;
@@ -81,6 +81,21 @@ button { cursor: pointer; }
 }
 .iconBtn:hover { background: #f7f8fb; }
 .iconBtn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+/* Mikrofon: schmaler runder Button */
+.iconBtn.mic {
+  flex: none;
+  width: 44px;
+  min-width: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--accentSoft);
+  border-color: #d5d9ff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.iconBtn.mic:hover { background: #e0e3ff; }
 .iconBtn.mic.listening {
   background: #fee2e2;
   border-color: #f87171;
@@ -95,6 +110,7 @@ button { cursor: pointer; }
 /* Board */
 .board {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   max-width: 1400px;
   margin: 0 auto;
@@ -104,6 +120,7 @@ button { cursor: pointer; }
   background: var(--panel);
   border-radius: var(--radius);
   padding: 14px;
+  min-width: 0;
 }
 .panelHead {
   display: flex;
@@ -137,11 +154,13 @@ button { cursor: pointer; }
 
 .addForm {
   display: grid;
-  grid-template-columns: 1fr auto;
   gap: 8px;
   margin-bottom: 14px;
 }
+.addRow { display: flex; gap: 8px; }
 .addForm input {
+  flex: 1 1 0;
+  width: 0;
   min-height: 44px;
   padding: 0 14px;
   border-radius: 12px;
@@ -149,6 +168,7 @@ button { cursor: pointer; }
   background: #fff;
   min-width: 0;
 }
+.addRow .btn { flex: none; }
 
 .list {
   list-style: none;
@@ -305,7 +325,13 @@ dialog::backdrop { background: rgba(15, 18, 25, 0.45); }
     padding: 4px 16px 8px;
   }
   .tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
     min-height: 46px;
+    padding: 0 4px;
+    white-space: nowrap;
     border: 1px solid var(--line);
     border-radius: 12px;
     background: #fff;
@@ -313,18 +339,29 @@ dialog::backdrop { background: rgba(15, 18, 25, 0.45); }
     font-size: 14px;
   }
   .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .tabCount { opacity: 0.75; font-weight: 600; margin-left: 2px; }
+  .tabCount {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: #eef0f6;
+    color: var(--muted);
+  }
+  .tab.active .tabCount { background: rgba(255, 255, 255, 0.22); color: #fff; }
   .panel { display: none; }
   .panel.active { display: block; }
 }
 
 /* PC: drei Spalten */
 @media (min-width: 900px) {
-  .board { grid-template-columns: 1.3fr 1fr 1fr; align-items: start; }
+  .board { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
 }
 
 /* sehr schmale Handys: Aktionen unter dem Titel */
 @media (max-width: 420px) {
   .card { grid-template-columns: auto 1fr; }
   .actions { grid-column: 2; padding: 0 0 6px 4px; }
+}
+@media (max-width: 380px) {
+  .tab { font-size: 13px; }
 }

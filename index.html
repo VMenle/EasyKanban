@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Stand: 03.10.2026 - Kanbantool Offline Version (Daten lokal im Browser) -->
+<!-- Stand: 04.10.2026 - EasyKanban (Offline Version, Daten lokal im Browser) -->
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -41,10 +41,14 @@
       <span class="count" id="countSammel"></span>
     </div>
     <form id="addForm" class="addForm" autocomplete="off">
-      <input id="addTitle" type="text" maxlength="200" placeholder="Neue Aufgabe oder Idee …" required aria-label="Aufgabe">
-      <button id="micBtn" class="iconBtn mic" type="button" aria-label="Diktieren" title="Diktieren">🎤</button>
-      <input id="addTag" type="text" maxlength="40" list="tagList" placeholder="Stichwort" aria-label="Stichwort">
-      <button class="btn primary" type="submit">Hinzufügen</button>
+      <div class="addRow">
+        <input id="addTitle" type="text" maxlength="200" placeholder="Neue Aufgabe …" required aria-label="Aufgabe">
+        <button id="micBtn" class="iconBtn mic" type="button" aria-label="Diktieren" title="Diktieren">🎤</button>
+      </div>
+      <div class="addRow">
+        <input id="addTag" type="text" maxlength="40" list="tagList" placeholder="Stichwort" aria-label="Stichwort">
+        <button class="btn primary" type="submit">Hinzufügen</button>
+      </div>
     </form>
     <ul class="list" data-area="sammel"></ul>
     <p class="empty" data-empty="sammel">Noch nichts im Sammelkorb.</p>
