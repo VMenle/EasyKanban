@@ -1,6 +1,6 @@
 // Stand: 04.10.2026 - Service Worker: die App startet auch ohne Netz.
 // Bei jeder Aenderung an den Dateien die Nummer in CACHE erhoehen, damit Geraete die neue Version laden.
-const CACHE = 'kanban_v4';
+const CACHE = 'kanban_v5';
 const CORE = ['./', 'index.html', 'style.css', 'app.js', 'logic.js', 'manifest.json', 'icon.svg'];
 const OPTIONAL = ['icon180.png', 'icon192.png', 'icon512.png', 'icon512maskable.png'];
 

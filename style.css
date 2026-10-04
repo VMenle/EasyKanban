@@ -357,10 +357,11 @@ dialog::backdrop { background: rgba(15, 18, 25, 0.45); }
   .board { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
 }
 
-/* sehr schmale Handys: Aktionen unter dem Titel */
+/* sehr schmale Handys: Buttons stehen neben dem Titel,
+   nur in i.A. (zwei Textbuttons) stehen sie unter dem Titel */
 @media (max-width: 420px) {
-  .card { grid-template-columns: auto 1fr; }
-  .actions { grid-column: 2; padding: 0 0 6px 4px; }
+  .list[data-area="ia"] .card { grid-template-columns: auto 1fr; }
+  .list[data-area="ia"] .actions { grid-column: 2; padding: 0 0 6px 4px; }
 }
 @media (max-width: 380px) {
   .tab { font-size: 13px; }
