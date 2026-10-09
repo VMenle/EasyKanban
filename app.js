@@ -1,4 +1,4 @@
-// Stand: 03.10.2026 - Oberflaeche des Kanbantools (lokal im Browser, ohne Server)
+// Stand: 09.10.2026 - Oberflaeche von EasyKanban (lokal im Browser, ohne Server)
 (function () {
   'use strict';
 
@@ -89,9 +89,85 @@
     mutate(function () { return { ok: L.removeTask(state, id) }; }, message);
   }
 
+  // ---------- Filter nach Stichwort (nur Anzeige, die Daten bleiben unveraendert) ----------
+
+  var ALL = '__all';
+  var NONE = '__none';
+  var filterKey = ALL;   // Start immer mit "Alle", wird nicht gespeichert
+  var filterName = '';
+  var lastPrefill = '';
+
+  function tagKey(tag) { return String(tag || '').trim().toLowerCase(); }
+
+  function matches(t) {
+    if (filterKey === ALL) return true;
+    var k = tagKey(t.tag);
+    if (filterKey === NONE) return k === '';
+    return k !== '' && 't:' + k === filterKey;
+  }
+
+  // Stichwoerter ohne Beachtung der Gross und Kleinschreibung zusammenfassen
+  function tagGroups() {
+    var groups = {};
+    state.tasks.forEach(function (t) {
+      var name = String(t.tag || '').trim();
+      if (!name) return;
+      var k = name.toLowerCase();
+      var g = groups[k] || (groups[k] = {});
+      g[name] = (g[name] || 0) + 1;
+    });
+    return Object.keys(groups).map(function (k) {
+      var variants = groups[k];
+      var best = null;
+      Object.keys(variants).forEach(function (n) {
+        if (best === null || variants[n] > variants[best] || (variants[n] === variants[best] && n < best)) best = n;
+      });
+      return { key: 't:' + k, name: best };
+    }).sort(function (a, b) { return a.name.localeCompare(b.name, 'de'); });
+  }
+
+  // Stichwort Feld bei aktivem Filter vorausfuellen, damit neue Aufgaben nicht sofort verschwinden
+  function syncPrefill() {
+    var input = $('addTag');
+    var want = filterKey.indexOf('t:') === 0 ? filterName : '';
+    if (input.value === '' || input.value === lastPrefill) input.value = want;
+    lastPrefill = want;
+  }
+
+  function renderFilter() {
+    var sel = $('filterSel');
+    var groups = tagGroups();
+    var hasNone = state.tasks.some(function (t) { return tagKey(t.tag) === ''; });
+    var current = null;
+    groups.forEach(function (g) { if (g.key === filterKey) current = g; });
+    var valid = filterKey === ALL || (filterKey === NONE && hasNone && groups.length > 0) || current !== null;
+    if (!valid) {
+      // das gewaehlte Stichwort gibt es nicht mehr: zurueck auf "Alle"
+      filterKey = ALL;
+      filterName = '';
+      syncPrefill();
+    } else {
+      filterName = current ? current.name : '';
+    }
+    sel.textContent = '';
+    function opt(value, text) {
+      var o = document.createElement('option');
+      o.value = value;
+      o.textContent = text;   // Nutzertext nie als HTML
+      sel.appendChild(o);
+    }
+    opt(ALL, 'Alle');
+    groups.forEach(function (g) { opt(g.key, g.name); });
+    if (hasNone && groups.length) opt(NONE, 'Ohne Stichwort');
+    sel.value = filterKey;
+    sel.disabled = groups.length === 0;
+    sel.classList.toggle('active', filterKey !== ALL);
+  }
+
   // ---------- Anzeige ----------
 
   function render() {
+    renderFilter();
     L.AREAS.forEach(renderArea);
     renderTags();
     renderTabs();
@@ -100,11 +176,29 @@
   function renderArea(area) {
     var list = document.querySelector('.list[data-area="' + area + '"]');
     var tasks = L.inArea(state, area);
+    var shown = 0;
     list.textContent = '';
-    tasks.forEach(function (t) { list.appendChild(createCard(t)); });
+    tasks.forEach(function (t) {
+      var card = createCard(t);
+      if (matches(t)) shown++; else card.classList.add('filteredOut');   // nur ausblenden, nicht verschieben
+      list.appendChild(card);
+    });
 
-    document.querySelector('[data-empty="' + area + '"]').hidden = tasks.length > 0;
+    var empty = document.querySelector('[data-empty="' + area + '"]');
+    if (!empty.dataset.def) empty.dataset.def = empty.textContent;
+    if (tasks.length === 0) {
+      empty.textContent = empty.dataset.def;
+      empty.hidden = false;
+    } else if (shown === 0) {
+      empty.textContent = filterKey === NONE
+        ? 'Keine Aufgaben ohne Stichwort.'
+        : 'Keine Aufgaben mit Stichwort „' + filterName + '“.';
+      empty.hidden = false;
+    } else {
+      empty.hidden = true;
+    }
 
+    // Zaehler zeigen immer die echten Gesamtzahlen (die Grenze von 5 gilt fuer alle Aufgaben)
     var counted = L.counted(state, area);
     var waiting = tasks.length - counted;
     var text;
@@ -293,7 +387,9 @@
     var title = $('addTitle').value.trim();
     if (!title) return;
     var tag = $('addTag').value;
-    mutate(function () { return { ok: !!L.addTask(state, { title: title, tag: tag }) }; });
+    var visible = matches({ tag: tag });
+    mutate(function () { return { ok: !!L.addTask(state, { title: title, tag: tag }) }; },
+      visible ? undefined : 'Aufgabe angelegt, aber durch den Filter ausgeblendet.');
     $('addTitle').value = '';
     $('addTitle').focus();
   });
@@ -334,9 +430,12 @@
         notes = text;
       }
       var tag = $('addTag').value;
+      var message = matches({ tag: tag })
+        ? 'Diktat im Sammelkorb gespeichert.'
+        : 'Diktat gespeichert, aber durch den Filter ausgeblendet.';
       mutate(function () {
         return { ok: !!L.addTask(state, { title: title, tag: tag, notes: notes }) };
-      }, 'Diktat im Sammelkorb gespeichert.');
+      }, message);
     };
 
     rec.onerror = function (ev) {
@@ -364,7 +463,7 @@
     }
   });
 
-  // ---------- Export und Import ----------
+  // ---------- Export (Sicherung als Datei) ----------
 
   function pad(n) { return (n < 10 ? '0' : '') + n; }
 
@@ -379,25 +478,6 @@
     a.click();
     a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-  });
-
-  $('importBtn').addEventListener('click', function () { $('importFile').click(); });
-
-  $('importFile').addEventListener('change', function (e) {
-    var file = e.target.files && e.target.files[0];
-    e.target.value = '';
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { toast('Datei ist zu groß.'); return; }
-    var reader = new FileReader();
-    reader.onload = function () {
-      var data = null;
-      try { data = L.sanitize(JSON.parse(String(reader.result))); } catch (err) {}
-      if (!data) { toast('Die Datei ist keine gültige Aufgaben Sicherung.'); return; }
-      if (!window.confirm(data.tasks.length + ' Aufgaben importieren? Die aktuellen Aufgaben werden ersetzt.')) return;
-      mutate(function () { state = data; return { ok: true }; }, 'Import abgeschlossen.');
-    };
-    reader.onerror = function () { toast('Datei konnte nicht gelesen werden.'); };
-    reader.readAsText(file);
   });
 
   // ---------- Sortieren per Ziehen (Maus und Touch) ----------
@@ -472,6 +552,12 @@
 
   document.querySelectorAll('.tab').forEach(function (b) {
     b.addEventListener('click', function () { setTab(b.dataset.area); });
+  });
+
+  $('filterSel').addEventListener('change', function (e) {
+    filterKey = e.target.value;
+    render();
+    syncPrefill();
   });
 
   // Aenderungen in einem anderen Tab desselben Browsers uebernehmen

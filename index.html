@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Stand: 04.10.2026 - EasyKanban (Offline Version, Daten lokal im Browser) -->
+<!-- Stand: 09.10.2026 - EasyKanban (Offline Version, Daten lokal im Browser) -->
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -20,9 +20,13 @@
   <div class="top">
     <h1>EasyKanban</h1>
     <div class="topActions">
+      <label class="filterBox" title="Nach Stichwort filtern">
+        <span class="filterIcon" aria-hidden="true">🏷</span>
+        <select id="filterSel" class="filterSel" aria-label="Nach Stichwort filtern">
+          <option value="__all">Alle</option>
+        </select>
+      </label>
       <button id="exportBtn" class="btn" type="button">Export</button>
-      <button id="importBtn" class="btn" type="button">Import</button>
-      <input id="importFile" type="file" accept="application/json,.json" hidden>
     </div>
   </div>
 </header>
